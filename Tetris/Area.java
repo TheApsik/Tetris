@@ -7,7 +7,7 @@ import java.awt.*;
 public class Area extends JPanel{
     private int x;
     private int y;
-    private boolean isBlock;
+    public boolean isBlock;
 
     public Area(int posY, int posX, int size){
         x = posX;
