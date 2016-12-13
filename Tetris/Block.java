@@ -1,6 +1,5 @@
 package Tetris;
 
-import java.awt.*;
 
 public class Block {
     public int x;

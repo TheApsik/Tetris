@@ -60,6 +60,9 @@ public enum Figure{
         }
     }
 
+    public Color getColor(){
+        return color;
+    }
     public int[][] getNet(){
         return figure;
     }
