@@ -6,9 +6,9 @@ public class Block {
     public int y;
     public Figure figure;
 
-    public Block(Figure figure, int posX, int posY){
-        this.figure = figure;
-        x = posX;
-        y = posY;
+    public Block(){
+        this.figure = Figure.O;
+        x = 0;
+        y = 0;
     }
 }

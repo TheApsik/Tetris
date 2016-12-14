@@ -2,26 +2,29 @@ package Tetris;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
+import java.util.Random;
 
-public class Game extends TetrisFrame {
+public class Game extends TetrisFrame implements KeyListener {
     public Game(int Height, int Width, int size){
         super (Height, Width, size);
 
         Runnable start = new Runnable() {
-            Block block = new Block(Figure.T,0,7);
+            Block block = new Block();
             @Override
-            public void run() {
-                System.out.println(System.currentTimeMillis());
+            public void run(){
+                spawnNewBlock(block);
                 int wait = 1000;
                 long time = 0;
-                while(time < System.currentTimeMillis()) {
-                    System.out.print
-                    time = System.currentTimeMillis() + wait;
-                    moveDown(block);
+                while(true) {
+                    if (time < System.currentTimeMillis()) {
+                        time = System.currentTimeMillis() + wait;
+                        moveDown(block);
+                    }
                 }
             }
         };
-        new Thread(start).start();
+        new Thread(start, "Start").start();
     }
     private void putBlock(Block block){
         int [][] net = block.figure.getNet();
@@ -36,38 +39,39 @@ public class Game extends TetrisFrame {
         }
     }
 
+    private void spawnNewBlock(Block block){
+        block.figure = Figure.randomFigure();
+        block.y = 0;
+        block.x = width/2-1;
+        setBlock(block);
+    }
+
     private void moveDown(Block block){
-        System.out.println("dziala");
         clearBlock(block);
         int [][] net = block.figure.getNet();
-        block.y++;
         for(int x=0; x<net.length; x++) {
             for (int y = 0; y < net[x].length; y++) {
                 int posX = block.x + x;
-                int posY = block.y - net[x].length + y;
-
-                if(height<block.y){
-                    block.y--;
+                int posY = block.y + 1 - net[x].length + y;
+                if((posY > -1 && posY<height && areas[posY][posX].isBlock && net[x][y] == 1) || height<=posY) {
                     setBlock(block);
                     putBlock(block);
-                    block.y = 0;
+                    spawnNewBlock(block);
+                    System.out.println("kolizja");
+                    return;
                 }
-
-                if(areas[posY][posX].isBlock && net[x][y] == 1) {
-                    block.y--;
-                    System.out.print("kolizja");
-                }
-
-                setBlock(block);
             }
         }
+
+        block.y++;
+        setBlock(block);
     }
 
     public static void main(String... arg) {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Game frame = new Game(30,20,20);
+                Game frame = new Game(15,10,20);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
             }

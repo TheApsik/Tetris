@@ -1,6 +1,9 @@
 package Tetris;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 public enum Figure{
     I(new int[][]{
@@ -65,5 +68,13 @@ public enum Figure{
     }
     public int[][] getNet(){
         return figure;
+    }
+
+    private static final Figure[] VALUES = values();
+    private static final int SIZE = VALUES.length;
+    private static final Random RANDOM = new Random();
+
+    public static Figure randomFigure()  {
+        return VALUES[RANDOM.nextInt(SIZE)];
     }
 }
