@@ -48,14 +48,14 @@ public class Area extends JPanel{
 
         if(x%2==1){
             if(y%2 == 1)
-                setBackground(new Color(range(red-20), range(green -20), range(blue-20)));
+                setBackground(new Color(range(red-10), range(green -10), range(blue-10)));
             else
                 setBackground(col);
         }else{
             if(y%2 == 1)
                 setBackground(col);
             else
-                setBackground(new Color(range(red+20), range(green +20), range(blue+20)));
+                setBackground(new Color(range(red+10), range(green +10), range(blue+10)));
         }
     }
 }

@@ -2,10 +2,11 @@ package Tetris;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
-public class Game extends TetrisFrame implements KeyListener {
+public class Game extends TetrisFrame{
     public Game(int Height, int Width, int size){
         super (Height, Width, size);
 
@@ -13,8 +14,42 @@ public class Game extends TetrisFrame implements KeyListener {
             Block block = new Block();
             @Override
             public void run(){
+                addKeyListener(new KeyListener() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {}
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        switch (e.getKeyCode()) {
+                            case KeyEvent.VK_UP:
+                                clearBlock(block);
+                                block.figure.rotate();
+                                setBlock(block);
+                                break;
+                            case KeyEvent.VK_LEFT:
+                                if(block.x > 0) {
+                                    clearBlock(block);
+                                    block.x--;
+                                    setBlock(block);
+                                }
+                                break;
+                            case KeyEvent.VK_RIGHT:
+                                if(block.x+block.figure.getSizeX() < width) {
+                                    System.out.println(block.figure.getSizeX());
+                                    clearBlock(block);
+                                    block.x++;
+                                    setBlock(block);
+                                }
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e) {}
+                });
+
                 spawnNewBlock(block);
-                int wait = 1000;
+                int wait = 300;
                 long time = 0;
                 while(true) {
                     if (time < System.currentTimeMillis()) {
@@ -26,6 +61,7 @@ public class Game extends TetrisFrame implements KeyListener {
         };
         new Thread(start, "Start").start();
     }
+
     private void putBlock(Block block){
         int [][] net = block.figure.getNet();
         for(int x=0; x<net.length; x++){
