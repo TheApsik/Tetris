@@ -49,4 +49,8 @@ public class TetrisFrame extends JFrame {
             }
         }
     }
+
+    public boolean getIsBlock(int x, int y){
+        return areas[y][x].isBlock;
+    }
 }

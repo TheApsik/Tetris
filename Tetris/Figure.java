@@ -53,7 +53,7 @@ public enum Figure{
             int [][] rotated = new int[sizeY][sizeX];// TODO: REPAIR
             for(int y =0; y<sizeY; y++){
                 for(int x= 0; x<sizeX; x++){
-                    rotated[sizeX - x - 1][y] = figure[y][x];
+                    rotated[sizeY - y - 1][x] = figure[x][y]; // sizeX - x - 1
                 }
             }
             int sX= sizeX;

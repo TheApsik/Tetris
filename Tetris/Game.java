@@ -12,6 +12,17 @@ public class Game extends TetrisFrame{
 
         Runnable start = new Runnable() {
             Block block = new Block();
+            private boolean goLeft(){
+                int [][] net = block.figure.getNet();
+                System.out.println(net[0].length);
+                for(int x=0; x<net[0].length; x++){
+                    System.out.println(getIsBlock(block.x -1, block.y+x));
+                    //if(getIsBlock(block.x+x, block.y-1)){
+                        //return false;
+                    //}
+                }
+                return true;
+            }
             @Override
             public void run(){
                 addKeyListener(new KeyListener() {
@@ -27,7 +38,8 @@ public class Game extends TetrisFrame{
                                 setBlock(block);
                                 break;
                             case KeyEvent.VK_LEFT:
-                                if(block.x > 0) {
+                                goLeft();
+                                if(block.x > 0 && goLeft()) {
                                     clearBlock(block);
                                     block.x--;
                                     setBlock(block);
@@ -35,12 +47,24 @@ public class Game extends TetrisFrame{
                                 break;
                             case KeyEvent.VK_RIGHT:
                                 if(block.x+block.figure.getSizeX() < width) {
-                                    System.out.println(block.figure.getSizeX());
+                                    //System.out.println(block.figure.getSizeX());
                                     clearBlock(block);
                                     block.x++;
                                     setBlock(block);
                                 }
                                 break;
+
+                            case KeyEvent.VK_DOWN:
+                                moveDown(block);
+                                break;
+
+
+                            case KeyEvent.VK_SPACE:
+                                setBlock(block);
+                                putBlock(block);
+                                spawnNewBlock(block);
+                                break;
+
                         }
                     }
 
@@ -54,7 +78,7 @@ public class Game extends TetrisFrame{
                 while(true) {
                     if (time < System.currentTimeMillis()) {
                         time = System.currentTimeMillis() + wait;
-                        moveDown(block);
+                        //moveDown(block);
                     }
                 }
             }
