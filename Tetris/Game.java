@@ -7,6 +7,9 @@ import java.awt.event.KeyListener;
 import java.util.Random;
 
 public class Game extends TetrisFrame{
+    int speed = 50;
+    int normal = 300;
+    int wait = normal;
     public Game(int Height, int Width, int size){
         super (Height, Width, size);
 
@@ -16,7 +19,9 @@ public class Game extends TetrisFrame{
                 int [][] net = block.figure.getNet();
                 for(int x=0; x<net.length; x++){
                     for(int y=0; y<net[x].length; y++){
-                        if(getIsBlock(block.x + x -1, block.y - net[x].length + y) && net[x][y] == 1){
+                        int posX = block.x + x - 1;
+                        int posY = block.y - net[x].length + y;
+                        if(posY > -1 && posY<height && posX>-1 && posX < width && net[x][y] == 1 && getIsBlock(posX, posY) && net[x][y] == 1){
                             return false;
                         }
                     }
@@ -28,7 +33,26 @@ public class Game extends TetrisFrame{
                 int [][] net = block.figure.getNet();
                 for(int x=0; x<net.length; x++){
                     for(int y=0; y<net[x].length; y++){
-                        if(getIsBlock(block.x + x +1, block.y - net[x].length + y) && net[x][y] == 1){
+                        int posX = block.x + x +1;
+                        int posY = block.y - net[x].length + y;
+                        if(posY > -1 && posY<height && posX>-1 && posX < width && net[x][y] == 1 && getIsBlock(posX, posY)){
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            private boolean canRotate(){
+                int [][] net = block.figure.getRotate();
+                for(int x=0; x<net.length; x++) {
+                    for (int y = 0; y < net[x].length; y++) {
+                        int posX = block.x + x;
+                        int posY = block.y - net[x].length + y;
+                        if(posY < 0 || posY>=height){
+                            continue;
+                        }
+                        if(posX<0 || posX >= width || (net[x][y] == 1 && getIsBlock(posX, posY))){
                             return false;
                         }
                     }
@@ -45,12 +69,13 @@ public class Game extends TetrisFrame{
                     public void keyPressed(KeyEvent e) {
                         switch (e.getKeyCode()) {
                             case KeyEvent.VK_UP:
-                                clearBlock(block);
-                                block.figure.rotate();
-                                setBlock(block);
+                                if(canRotate()) {
+                                    clearBlock(block);
+                                    block.figure.rotate();
+                                    setBlock(block);
+                                }
                                 break;
                             case KeyEvent.VK_LEFT:
-                                goLeft();
                                 if(block.x > 0 && goLeft()) {
                                     clearBlock(block);
                                     block.x--;
@@ -66,29 +91,32 @@ public class Game extends TetrisFrame{
                                 break;
 
                             case KeyEvent.VK_DOWN:
-                                moveDown(block);
+                                wait = speed;
                                 break;
 
 
                             case KeyEvent.VK_SPACE:
-                                setBlock(block);
-                                putBlock(block);
-                                spawnNewBlock(block);
+                                putDown(block);
                                 break;
 
                         }
                     }
 
                     @Override
-                    public void keyReleased(KeyEvent e) {}
+                    public void keyReleased(KeyEvent e) {
+                        switch (e.getKeyCode()) {
+                            case KeyEvent.VK_DOWN:
+                                wait = normal;
+                                break;
+                        }
+                    }
                 });
 
                 spawnNewBlock(block);
-                int wait = 300;
                 long time = 0;
                 while(true) {
-                    if (time < System.currentTimeMillis()) {
-                        time = System.currentTimeMillis() + wait;
+                    if (time+wait < System.currentTimeMillis()) {
+                        time = System.currentTimeMillis();
                         moveDown(block);
                     }
                 }
@@ -98,15 +126,16 @@ public class Game extends TetrisFrame{
     }
 
     private void putBlock(Block block){
-        int [][] net = block.figure.getNet();
-        for(int x=0; x<net.length; x++){
-            for(int y=0; y<net[x].length; y++){
-                int posX = block.x + x;
-                int posY = block.y - net[x].length + y;
+        int hei = block.figure.getSizeY();
 
-                if(posY > -1 && posY<height && posX>-1 && posX < width && net[x][y] == 1)
-                    areas[posY][posX].isBlock = true;
+        for(int y = block.y; y<block.y - hei; y--){
+            for(int i=0; i<width; i++){
+                if(getIsBlock(i, y)){
+                    continue;
+                }
+                break;
             }
+
         }
     }
 
@@ -115,6 +144,51 @@ public class Game extends TetrisFrame{
         block.y = 0;
         block.x = width/2-1;
         setBlock(block);
+    }
+
+    private void slideLines(int from){
+        for(;from>0; from--){
+            for(int i = 0; i<width; i++) {
+
+            }
+        }
+    }
+
+    private void chackLine(Block block){
+        int [][] net = block.figure.getNet();
+        for(int y=0; y<net[0].length;){
+            for(int x=0; x<width; x++) {
+                int posY = block.y - net[0].length + y;
+
+                if (getIsBlock(x, posY)){
+                    continue;
+                }
+                y++;
+                break;
+            }
+            slideLines(y);
+        }
+    }
+
+    private void putDown(Block block){
+        clearBlock(block);
+        while (true) {
+            int[][] net = block.figure.getNet();
+            for (int x = 0; x < net.length; x++) {
+                for (int y = 0; y < net[x].length; y++) {
+                    int posX = block.x + x;
+                    int posY = block.y + 1 - net[x].length + y;
+                    if ((posY > -1 && posY < height && areas[posY][posX].isBlock && net[x][y] == 1) || height <= posY) {
+                        setBlock(block);
+                        putBlock(block);
+                        spawnNewBlock(block);
+                        return;
+                    }
+                }
+            }
+
+            block.y++;
+        }
     }
 
     private void moveDown(Block block){
@@ -128,7 +202,6 @@ public class Game extends TetrisFrame{
                     setBlock(block);
                     putBlock(block);
                     spawnNewBlock(block);
-                    System.out.println("kolizja");
                     return;
                 }
             }

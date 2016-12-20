@@ -63,8 +63,24 @@ public enum Figure{
         }
     }
 
+    public int[][] getRotate(){
+        if(rotate){
+            int [][] rotated = new int[sizeY][sizeX];// TODO: REPAIR
+            for(int y =0; y<sizeY; y++){
+                for(int x= 0; x<sizeX; x++){
+                    rotated[sizeY - y - 1][x] = figure[x][y]; // sizeX - x - 1
+                }
+            }
+            return rotated;
+        }
+        return figure;
+    }
+
     public int getSizeX(){
         return sizeX;
+    }
+    public int getSizeY(){
+        return sizeY;
     }
 
     public Color getColor(){
@@ -79,6 +95,11 @@ public enum Figure{
     private static final Random RANDOM = new Random();
 
     public static Figure randomFigure()  {
-        return VALUES[RANDOM.nextInt(SIZE)];
+        Figure rand = VALUES[RANDOM.nextInt(SIZE)];
+        if(rand.rotate)
+            for (int i =0; i < RANDOM.nextInt(3); i++)
+                rand.rotate();
+
+        return rand;
     }
 }
