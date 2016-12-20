@@ -53,4 +53,7 @@ public class TetrisFrame extends JFrame {
     public boolean getIsBlock(int x, int y){
         return areas[y][x].isBlock;
     }
+    public void test(int x, int y){
+        areas[y][x].setColor(Color.BLACK);
+    }
 }

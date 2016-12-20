@@ -14,12 +14,24 @@ public class Game extends TetrisFrame{
             Block block = new Block();
             private boolean goLeft(){
                 int [][] net = block.figure.getNet();
-                System.out.println(net[0].length);
-                for(int x=0; x<net[0].length; x++){
-                    System.out.println(getIsBlock(block.x -1, block.y+x));
-                    //if(getIsBlock(block.x+x, block.y-1)){
-                        //return false;
-                    //}
+                for(int x=0; x<net.length; x++){
+                    for(int y=0; y<net[x].length; y++){
+                        if(getIsBlock(block.x + x -1, block.y - net[x].length + y) && net[x][y] == 1){
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            private boolean goRight(){
+                int [][] net = block.figure.getNet();
+                for(int x=0; x<net.length; x++){
+                    for(int y=0; y<net[x].length; y++){
+                        if(getIsBlock(block.x + x +1, block.y - net[x].length + y) && net[x][y] == 1){
+                            return false;
+                        }
+                    }
                 }
                 return true;
             }
@@ -46,8 +58,7 @@ public class Game extends TetrisFrame{
                                 }
                                 break;
                             case KeyEvent.VK_RIGHT:
-                                if(block.x+block.figure.getSizeX() < width) {
-                                    //System.out.println(block.figure.getSizeX());
+                                if(block.x+block.figure.getSizeX() < width && goRight()) {
                                     clearBlock(block);
                                     block.x++;
                                     setBlock(block);
@@ -78,7 +89,7 @@ public class Game extends TetrisFrame{
                 while(true) {
                     if (time < System.currentTimeMillis()) {
                         time = System.currentTimeMillis() + wait;
-                        //moveDown(block);
+                        moveDown(block);
                     }
                 }
             }
