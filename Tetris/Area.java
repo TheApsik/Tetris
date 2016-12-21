@@ -8,6 +8,7 @@ public class Area extends JPanel{
     private int x;
     private int y;
     public boolean isBlock;
+    private Color col;
 
     public Area(int posY, int posX, int size){
         x = posX;
@@ -18,6 +19,7 @@ public class Area extends JPanel{
     }
 
     public void setDefaultColor(){
+        this.col = null;
         if(x%2==1){
             if(y%2 == 1)
                 setBackground(new Color(100,100,100));
@@ -41,7 +43,16 @@ public class Area extends JPanel{
         return value;
     }
 
+    public void copyValuesArea(Area area){
+        isBlock = area.isBlock;
+        if(area.col != null)
+            setColor(area.col);
+        else
+            setDefaultColor();
+    }
+
     public void setColor(Color col){
+        this.col = col;
         int red = col.getRed();
         int green = col.getGreen();
         int blue = col.getBlue();

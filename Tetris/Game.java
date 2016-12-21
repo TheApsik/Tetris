@@ -75,6 +75,7 @@ public class Game extends TetrisFrame{
                                     setBlock(block);
                                 }
                                 break;
+
                             case KeyEvent.VK_LEFT:
                                 if(block.x > 0 && goLeft()) {
                                     clearBlock(block);
@@ -82,6 +83,7 @@ public class Game extends TetrisFrame{
                                     setBlock(block);
                                 }
                                 break;
+
                             case KeyEvent.VK_RIGHT:
                                 if(block.x+block.figure.getSizeX() < width && goRight()) {
                                     clearBlock(block);
@@ -91,14 +93,17 @@ public class Game extends TetrisFrame{
                                 break;
 
                             case KeyEvent.VK_DOWN:
+                                //moveDown(block);
                                 wait = speed;
                                 break;
-
 
                             case KeyEvent.VK_SPACE:
                                 putDown(block);
                                 break;
 
+                            case KeyEvent.VK_ENTER:
+                                checkLine(block);
+                                break;
                         }
                     }
 
@@ -126,16 +131,15 @@ public class Game extends TetrisFrame{
     }
 
     private void putBlock(Block block){
-        int hei = block.figure.getSizeY();
+        int [][] net = block.figure.getNet();
+        for(int x=0; x<net.length; x++){
+            for(int y=0; y<net[x].length; y++){
+                int posX = block.x + x;
+                int posY = block.y - net[x].length + y;
 
-        for(int y = block.y; y<block.y - hei; y--){
-            for(int i=0; i<width; i++){
-                if(getIsBlock(i, y)){
-                    continue;
-                }
-                break;
+                if(posY > -1 && posY<height && posX>-1 && posX < width && net[x][y] == 1)
+                    areas[posY][posX].isBlock = true;
             }
-
         }
     }
 
@@ -149,24 +153,25 @@ public class Game extends TetrisFrame{
     private void slideLines(int from){
         for(;from>0; from--){
             for(int i = 0; i<width; i++) {
-
+                areas[from][i].copyValuesArea(areas[from-1][i]);
             }
         }
     }
 
-    private void chackLine(Block block){
+    private void checkLine(Block block){
         int [][] net = block.figure.getNet();
-        for(int y=0; y<net[0].length;){
+        for(int y=0; y<net[0].length; y++){
+            int posY = block.y - net[0].length + y;
+            boolean full = true;
             for(int x=0; x<width; x++) {
-                int posY = block.y - net[0].length + y;
-
                 if (getIsBlock(x, posY)){
                     continue;
                 }
-                y++;
+                full = false;
                 break;
             }
-            slideLines(y);
+            if(full)
+                slideLines(posY);
         }
     }
 
@@ -181,6 +186,7 @@ public class Game extends TetrisFrame{
                     if ((posY > -1 && posY < height && areas[posY][posX].isBlock && net[x][y] == 1) || height <= posY) {
                         setBlock(block);
                         putBlock(block);
+                        checkLine(block);
                         spawnNewBlock(block);
                         return;
                     }
@@ -198,9 +204,12 @@ public class Game extends TetrisFrame{
             for (int y = 0; y < net[x].length; y++) {
                 int posX = block.x + x;
                 int posY = block.y + 1 - net[x].length + y;
+                //System.out.print("tu1 ");
+                //System.out.println((posY > -1 && posY<height && areas[posY][posX].isBlock && net[x][y] == 1) || height<=posY);
                 if((posY > -1 && posY<height && areas[posY][posX].isBlock && net[x][y] == 1) || height<=posY) {
                     setBlock(block);
                     putBlock(block);
+                    checkLine(block);
                     spawnNewBlock(block);
                     return;
                 }
